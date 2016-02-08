@@ -3,32 +3,68 @@ var fs = require('fs');
 var request = require('request');
 var cheerio = require('cheerio');
 var app     = express();
+var bodyParser  = require('body-parser');
+var _ = require('underscore');
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
 
 
-    url = 'http://app01/rjss';
+var rjss, sanityChecksArr, sanityChecksApiObj;
+
+var findSanityChecksInResponse = function(){
+
+    sanityChecksApiObj = {
+        date:Date.now(),
+        sanityChecks:[]
+    };
+
+    _.each(sanityChecksArr,function(item){
+        var result = {'item':item};
+        result.found = rjss.indexOf(item) !== -1;
+        sanityChecksApiObj.sanityChecks.push(result)
+    });
+
+    console.log(sanityChecksApiObj)
+
+};
+
+var postResult = function(){
 
 
+};
 
-    //reuest 1:
-        // - req get list of sanity check words
 
-    request(url, function(error, response, html){
+var runThis = function() {
 
-        // First we'll check to make sure no errors occurred when making the request
+    request('http://app01/rjss', function(error, response, html){
 
-        console.log('r',response);
+        rjss = JSON.stringify(response.body);
 
-        if(!error){
-            // Next, we'll utilize the cheerio library on the returned html which will essentially give us jQuery functionality
+        if(!error) {
 
-            var $ = cheerio.load(html);
+            request('https://a99.herokuapp.com/sanitychecks', function(error, response, html){
 
-            // Finally, we'll define the variables we're going to capture
+                if(!error) {
 
-            var title, release, rating;
-            var json = { title : "", release : "", rating : ""};
+                    var yo = JSON.parse(response.body)[0]['sanityCheck'];
+                    sanityChecksArr = yo.split('@@@')
+                    findSanityChecksInResponse()
+
+                }
+            });
         }
-    })
+    });
+};
+
+runThis();
+
+
+
+
+
 
 app.listen('8081')
 console.log('Magic happens on port 8081');
