@@ -11,7 +11,6 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
-
 var rjss, sanityChecksArr, sanityChecksApiObj;
 
 var findSanityChecksInResponse = function(){
@@ -33,9 +32,17 @@ var findSanityChecksInResponse = function(){
 
 var postResult = function(){
 
+    request.post(
+        'http://www.yoursite.com/formpage',
+        { form: { key: 'value' } },
+        function (error, response, body) {
+            if (!error && response.statusCode == 200) {
+                console.log(body)
+            }
+        }
+    );
 
 };
-
 
 var runThis = function() {
 
@@ -61,9 +68,10 @@ var runThis = function() {
 
 runThis();
 
-
-
-
+var myVar = setInterval(function(){ myTimer() }, 60000);
+function myTimer() {
+    runThis();
+}
 
 
 app.listen('8081')
