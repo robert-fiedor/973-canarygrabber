@@ -28,19 +28,27 @@ var findSanityChecksInResponse = function(){
 
     console.log(sanityChecksApiObj)
 
+    postResult();
+
 };
+
+function getSanityChecksApiObj(){
+    return sanityChecksApiObj;
+}
 
 var postResult = function(){
 
-    request.post(
-        'http://www.yoursite.com/formpage',
-        { form: { key: 'value' } },
-        function (error, response, body) {
-            if (!error && response.statusCode == 200) {
-                console.log(body)
-            }
-        }
-    );
+    console.log('---- - - ',getSanityChecksApiObj())
+    
+
+    request.post({
+        url:     'https://a99.herokuapp.com/canary',
+        form:    sanityChecksApiObj
+    }, function(error, response, body){
+        console.log(body);
+    });
+
+
 
 };
 
